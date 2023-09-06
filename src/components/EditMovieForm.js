@@ -26,24 +26,45 @@ const EditMovieForm = (props) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    axios
-      .put(`http://localhost:9000/api/movies/${id}`, movie)
-      .then((res) => {
-        setMovies(res.data);
-        push(`/movies/${movie.id}`);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    if (id === undefined || id === null) {
+      axios
+        .post(`http://localhost:9000/api/movies`, movie)
+        .then((res) => {
+          setMovies(res.data);
+          push(`/movies/${movie.id}`);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } else {
+      axios
+        .put(`http://localhost:9000/api/movies/${id}`, movie)
+        .then((res) => {
+          setMovies(res.data);
+          push(`/movies/${movie.id}`);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
   };
+
+  //şarj bitti sjsjs tamamm tamam
+  //burdan yaz şimdi göstereceğim yer doğru mu
 
   const { title, director, genre, metascore, description } = movie;
 
   useEffect(() => {
+    if (id === undefined || id === null) return;
+
     axios
-      .get("http://localhost:9000/api")
+      .get("http://localhost:9000/api/movies/" + id)
       .then(function (response) {
         // handle success
+        //burada get ile id si verilen filmi api den çağırıyoruz.
+        //hata yosa setMovie ile bu kaydı state atıyoz. bu movie state i,; b,z,m düzenleyeceğim,z film
+        //yani yaptığı doru
+        setMovie(response.data);
         console.log("response=>", response.data);
       })
       .catch(function (error) {
@@ -112,14 +133,22 @@ const EditMovieForm = (props) => {
         </div>
 
         <div className="px-5 py-4 border-t border-zinc-200 flex justify-end gap-2">
-          <Link to={`/movies/1`} className="myButton bg-zinc-500">
+          {
+            //burda bir nüans var eğer kaydı iptal etmek işterse hangi filmden gelmişse ona dönmesi lazım. yani id yazmalıyz
+            //ama kayıt düzenleme değilde yeni kayıtsa listeye dönmeli onun için bir şart atalım
+            //başka? delete var bir de onunda bir örneği olsa iyi olur
+          }
+          <Link
+            to={id === undefined || id === null ? `/movies` : `/movies/${id}`}
+            className="myButton bg-zinc-500"
+          >
             Vazgeç
           </Link>
           <button
             type="submit"
             className="myButton bg-green-700 hover:bg-green-600"
           >
-            Ekle
+            Kaydet
           </button>
         </div>
       </form>

@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams, useHistory } from "react-router-dom";
 
-import axios from "axios";
+import axios, { AxiosHeaders } from "axios";
 
 const Movie = (props) => {
-  const { addToFavorites } = props;
+  const { addToFavorites, setMovies } = props;
 
   const [movie, setMovie] = useState("");
 
@@ -21,6 +21,22 @@ const Movie = (props) => {
         console.log(err.response);
       });
   }, [id]);
+
+  const handleDeleteMovie = () => {
+    //burda id'si verilen filmi silecez
+
+    axios
+      .delete(`http://localhost:9000/api/movies/${id}`)
+      .then((res) => {
+        setMovies(res.data);
+        push(`/movies`);
+        //sildikten sonra listeye dönmesi için
+        //mantık anlaşıldı m?evet anladım mantığını ben readme kısmını okuyamadım projeyi de senin gibi yorumlayamıyorum tıkanmıştım ama genel mnatık oturdu
+      })
+      .catch((err) => {
+        console.log(err.response);
+      });
+  };
 
   return (
     <div className="bg-white rounded-md shadow flex-1">
@@ -60,7 +76,11 @@ const Movie = (props) => {
         >
           Edit
         </Link>
-        <button type="button" className="myButton bg-red-600 hover:bg-red-500">
+        <button
+          type="button"
+          onClick={handleDeleteMovie}
+          className="myButton bg-red-600 hover:bg-red-500"
+        >
           Sil
         </button>
       </div>
@@ -69,3 +89,12 @@ const Movie = (props) => {
 };
 
 export default Movie;
+
+//
+// crud create read update    delete
+// ---- post   get  put/patch delete <-- http req. ttypes
+// get ile ekrana listele
+// bir ekran tasarlanır ve kayıt ekleme işi yapar post ile. kayıt ekleme başarılı ise kaydı açar veya listelemeye geri döner.
+// kayıt detayına tıklanınca kayıtın tüm bilgileri getirilir.
+// getirilen kayıt güncellenmek istenirse. katdı güncelle ekranına yönlendir.
+// silme için bir onay kutusu. sonra listeye dön.
